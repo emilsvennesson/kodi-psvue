@@ -1,0 +1,82 @@
+﻿# Kodi PlayStation Vue language file
+msgid ""
+msgstr ""
+"Project-Id-Version: kodi-psvue\n"
+"Report-Msgid-Bugs-To: https://github.com/emilsvennesson/kodi-psvue\n"
+"POT-Creation-Date: 2016-07-05 14:30+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: English\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: en\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+
+msgctxt "#30001"
+msgid "Email"
+msgstr ""
+
+msgctxt "#30002"
+msgid "Password"
+msgstr ""
+
+msgctxt "#30003"
+msgid "General"
+msgstr ""
+
+msgctxt "#30004"
+msgid "Error"
+msgstr ""
+
+msgctxt "#30005"
+msgid "Login failed. Please make sure that your account information is correct."
+msgstr ""
+
+msgctxt "#30006"
+msgid "Your account is not authorized to watch this content. You find information on how to upgrade your package on the Viaplay website."
+msgstr ""
+
+msgctxt "#30007"
+msgid "Preferred stream quality"
+msgstr ""
+
+msgctxt "#30008"
+msgid "Always use highest bitrate"
+msgstr ""
+
+msgctxt "#30009"
+msgid "Ask"
+msgstr ""
+
+msgctxt "#30010"
+msgid "Select stream quality"
+msgstr ""
+
+msgctxt "#30011"
+msgid "Limit bitrate"
+msgstr ""
+
+msgctxt "#30012"
+msgid "Max bitrate allowed (Kbps)"
+msgstr ""
+
+msgctxt "#30013"
+msgid "Advanced"
+msgstr ""
+
+msgctxt "#30014"
+msgid "Verify SSL certificate"
+msgstr ""
+
+msgctxt "#30015"
+msgid "You have not supplied a username and/or password. Go to the add-on settings and enter your credentials."
+msgstr ""
+
+msgctxt "#30016"
+msgid "Select profile"
+msgstr ""
+
+msgctxt "#30017"
+msgid "You did not select a valid profile."
+msgstr ""

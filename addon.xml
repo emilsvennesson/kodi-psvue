@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<addon id="plugin.video.psvue"
+       version="0.0.1"
+       name="PlayStation Vue"
+       provider-name="emilsvennesson">
+  <requires>
+    <import addon="xbmc.python" version="2.24.0"/>
+    <import addon="script.module.requests" version="2.9.1"/>
+    <import addon="script.module.iso8601" version="0.1.11"/>
+    <import addon="script.module.m3u8" version="0.2.10"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource" library="default.py">
+    <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <description lang="en">Watch live TV and on-demand content from PlayStation Vue.[CR][CR]This add-on requires you to have a valid PlayStation Vue subscription.</description>
+    <platform>all</platform>
+    <license>GNU GENERAL PUBLIC LICENSE. Version 3, 29 June 2007</license>
+    <source>https://github.com/emilsvennesson/kodi-psvue</source>
+    <disclaimer>This add-on is completely unofficial and is not endorsed by Sony in any way.</disclaimer>
+  </extension>
+</addon>
