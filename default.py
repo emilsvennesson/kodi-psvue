@@ -184,7 +184,9 @@ def coloring(text, meaning):
     elif meaning == 'vod':
         color = 'FFABCC05'
     elif meaning == 'coming_up':
-        color = 'FF333333'
+        color = 'FFF28E02'
+    elif meaning == 'channel':
+        color = 'FFF202DE'
     colored_text = '[COLOR=%s]%s[/COLOR]' % (color, text)
     return colored_text
 
@@ -269,6 +271,11 @@ def list_programs(request_method, uri=None, program_id=None, expiration_filter=N
         else:
             title = info['title']
             content = 'tvshows'
+            try:
+                channel = program['channel']['name']
+            except KeyError:
+                channel = program['airings'][0]['channel_name']
+            channel_colored = coloring(channel, 'channel')
 
             airing_status = []
             for airing in program['airings']:
@@ -278,7 +285,7 @@ def list_programs(request_method, uri=None, program_id=None, expiration_filter=N
                     airing_status.append(status_colored)
             airing_status = '/'.join(airing_status)
 
-            list_title = '%s: %s' % (airing_status, title)
+            list_title = '%s: %s (%s)' % (channel_colored, title, airing_status)
 
             if not detailed:
                 if program['is_favorite']:
