@@ -318,6 +318,7 @@ def return_info(program):
     title = program.get('title')
     season = program.get('season_num')
     episode = program.get('episode_num')
+    plot = program.get('synopsis')
     genres = []
     for genre in program['genres']:
         genres.append(genre['genre'])
@@ -337,16 +338,12 @@ def return_info(program):
     if detailed:
         if program_type != 'Movies':
             title = program.get('display_episode_title')
-            plot = program.get('synopsis')
             mediatype = 'episode'
         else:
             mediatype = 'movie'
     else:
         if program.get('series_synopsis'):
             plot = program.get('series_synopsis')
-        else:
-            plot = program.get('synopsis')
-
         if program_type == 'Movies':
             mediatype = 'movie'
         else:
