@@ -226,6 +226,7 @@ def search():
         list_programs(request_method='get', search_query=search_query)
     else:
         addon_log('No search query provided.')
+        list_categories()
 
 
 def list_categories():
