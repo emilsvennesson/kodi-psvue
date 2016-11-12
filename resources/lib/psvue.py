@@ -116,7 +116,7 @@ class psvue(object):
         """Attempt to authenticate to the PlayStation Vue API."""
         url = 'https://sentv-user-auth.totsuko.tv/sentv_user_auth/ws/web/oauth2/token'
         payload = {
-            'device_type_id': 'ipad',
+            'device_type_id': 'web2-s',
             'device_id': self.get_credentials()['device_id'],
             'code': self.get_credentials()['code'],
             'issuer_id': '4'
