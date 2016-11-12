@@ -89,7 +89,8 @@ class psvue(object):
             'redirect_uri': 'https://vue.playstation.com/watch/html/auth-redirect.html?requestId=mlbam',
             'response_type': 'code',
             'scope': 'psn:s2s',
-            'prompt': 'none'
+            'prompt': 'none',
+            'nonce': str(time.time())  # unix timestamp
         }
 
         req = self.make_request(url, 'get', payload=params, return_req=True)
@@ -116,7 +117,7 @@ class psvue(object):
         """Attempt to authenticate to the PlayStation Vue API."""
         url = 'https://sentv-user-auth.totsuko.tv/sentv_user_auth/ws/web/oauth2/token'
         payload = {
-            'device_type_id': 'web2-s',
+            'device_type_id': 'web2-w',
             'device_id': self.get_credentials()['device_id'],
             'code': self.get_credentials()['code'],
             'issuer_id': '4'
