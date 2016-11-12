@@ -214,6 +214,19 @@ def select_profile():
             addon.setSetting('profile_name', '')  # reset profile if set_profile fails
             return False
 
+def list_search():
+    title = language(30021)
+    params = {'action': 'search'}
+    add_item(title, params)
+
+
+def search():
+    search_query = get_user_input(language(30022))
+    if search_query:
+        list_programs(request_method='get', search_query=search_query)
+    else:
+        addon_log('No search query provided.')
+
 
 def list_categories():
     categories = vue.get_categories()
@@ -227,6 +240,8 @@ def list_categories():
         }
 
         add_item(title, params)
+
+    list_search()
     xbmcplugin.endOfDirectory(_handle)
 
 
@@ -249,6 +264,7 @@ def list_sortings(type, uri=None, channel_id=None):
             add_item(sorting['title'], params)
         xbmcplugin.endOfDirectory(_handle)
 
+
 def live_on_top(program):
     """List live programs at the top of the listing."""
     airing_status = []
@@ -260,9 +276,9 @@ def live_on_top(program):
         return 1
 
 
-def list_programs(request_method, uri=None, program_id=None, expiration_filter=None):
+def list_programs(request_method, uri=None, program_id=None, search_query=None, expiration_filter=None):
     items = []
-    programs = vue.get_programs(request_method, uri, program_id, expiration_filter)
+    programs = vue.get_programs(request_method, uri, program_id, search_query, expiration_filter)
     if program_id:
         programs.sort(key=lambda x: x['airing_date'])  # sort detailed listing by date
         programs.sort(key=live_on_top)
@@ -313,9 +329,9 @@ def list_programs(request_method, uri=None, program_id=None, expiration_filter=N
                     start_time = coloring(airing_time, 'time')
                 else:
                     start_time = coloring('%s %s', 'time') % (airing_date_obj.strftime('%Y-%m-%d'), airing_time)
-                list_title = '%s %s %s: %s' % (airing_status, start_time, channel_colored, title)
+                list_title = '%s %s %s: %s' % (start_time, airing_status, channel_colored, title)
             else:
-                list_title = '%s %s: %s' % (airing_status, channel_colored, title)
+                list_title = '%s: %s' % (airing_status, title)
 
             if not detailed:
                 if program['is_favorite']:
@@ -504,6 +520,8 @@ def router(paramstring):
             play(params['airings_data'])
         elif params['action'] == 'dialog':
             dialog(params['dialog_type'], params['heading'], params['message'])
+        elif params['action'] == 'search':
+            search()
     else:
         init()
 

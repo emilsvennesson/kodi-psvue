@@ -298,16 +298,18 @@ class psvue(object):
 
         return channel_sortings
 
-    def get_programs(self, request_method, uri=None, program_id=None, expiration_filter=None, offset='0', size='999'):
-        """Retrieve the programs by providing an URI (from the parsed sortings)/program ID/search string."""
+    def get_programs(self, request_method, uri=None, program_id=None, search_query=None, expiration_filter=None, offset='0', size='999'):
+        """Retrieve the programs by providing an URI (from the parsed sortings)/program ID/search query."""
         if uri:
             url = self.config['epgContentBaseURL'] + uri
         elif program_id:
             url = self.config['epgContentBaseURL'] + 'details/items/program/%s/episodes/offset/%s/size/%s' % (program_id, offset, size)
             if expiration_filter:  # should be a string in ISO8601 format
                 url = url + '/expiration_filter/%s' % expiration_filter
+        elif search_query:
+            url = self.config['epgContentBaseURL'] + 'search/items/%s/offset/%s/size/%s' % (search_query, offset, size)
         else:
-            self.log('No URI/program ID supplied.')
+            self.log('No URI/program ID/search query supplied.')
             url = None
 
         if request_method == 'post':

@@ -92,3 +92,13 @@ msgstr ""
 msgctxt "#30020"
 msgid "24-hour clock"
 msgstr ""
+
+msgctxt "#30021"
+msgid "Search"
+msgstr ""
+
+msgctxt "#30022"
+msgid "Search for any show, movie or channel."
+msgstr ""
+
+
