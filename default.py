@@ -468,14 +468,14 @@ def return_art(program):
 
 def parse_airings(airings_data):
     airings = []
-
     for item in airings_data:
-        airing = {
-            'title': '%s (%s)' % (item['channel_name'], item['type'].upper()),
-            'airing_id': item['airing_id'],
-            'channel_id': item['channel_id']
-        }
-        airings.append(airing)
+        if item['badge'] != 'coming_up':
+            airing = {
+                'title': '%s (%s)' % (item['channel_name'], coloring(item['badge'].upper(), item['badge'])),
+                'airing_id': item['airing_id'],
+                'channel_id': item['channel_id']
+            }
+            airings.append(airing)
 
     return airings
 
@@ -484,9 +484,15 @@ def play(airings_data):
     airings_json = json.loads(airings_data)
     if len(airings_json) == 1:
         stream_url = vue.get_stream_url(airings_json[0]['airing_id'])
-        addon_log(stream_url)
     else:
-        stream_url = False
+        versions = []
+        for airing in airings_json:
+            versions.append(airing['title'])
+        selected_version = dialog('select', language(30023), options=versions)
+        if selected_version is not None:
+            stream_url = vue.get_stream_url(airings_json[selected_version]['airing_id'])
+        else:
+            return False
 
     if stream_url:
         bitrate = select_bitrate(stream_url['bitrates'].keys())
