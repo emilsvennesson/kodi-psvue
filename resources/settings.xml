@@ -5,6 +5,7 @@
     <setting id="password" type="text" label="30002" option="hidden"  enable="!eq(-1,)" default=""/>
     <setting id="preferred_bitrate" type="enum" label="30007" lvalues="30008|30011|30009" default="0"/>
     <setting id="max_bitrate_allowed" type="number" label="30012" default="5000" subsetting="true" visible="eq(-1,1)"/>
+    <setting id="time_notation" type="enum" label="30018" lvalues="30019|30020" default="0"/>
   </category>
   <category label="30013">
     <setting id="verify_ssl" type="bool" label="30014" default="true"/>

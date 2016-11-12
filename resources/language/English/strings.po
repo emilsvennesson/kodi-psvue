@@ -80,3 +80,15 @@ msgstr ""
 msgctxt "#30017"
 msgid "You did not select a valid profile."
 msgstr ""
+
+msgctxt "#30018"
+msgid "Time notation"
+msgstr ""
+
+msgctxt "#30019"
+msgid "12-hour clock (AM/PM)"
+msgstr ""
+
+msgctxt "#30020"
+msgid "24-hour clock"
+msgstr ""

@@ -36,7 +36,6 @@ if addon.getSetting('verify_ssl') == 'false':
     verify_ssl = False
 else:
     verify_ssl = True
-
 debug_cmd = {  # determine if debug logging is activated in kodi
                'jsonrpc': '2.0',
                'method': 'Settings.GetSettingValue',
@@ -187,6 +186,8 @@ def coloring(text, meaning):
         color = 'FFF28E02'
     elif meaning == 'channel':
         color = 'FFF202DE'
+    elif meaning == 'time':
+        color = 'FFFFFF12'
     colored_text = '[COLOR=%s]%s[/COLOR]' % (color, text)
     return colored_text
 
@@ -248,10 +249,24 @@ def list_sortings(type, uri=None, channel_id=None):
             add_item(sorting['title'], params)
         xbmcplugin.endOfDirectory(_handle)
 
+def live_on_top(program):
+    """List live programs at the top of the listing."""
+    airing_status = []
+    for airing in program['airings']:
+        airing_status.append(airing['badge'])
+    if 'live' in airing_status:
+        return -1
+    else:
+        return 1
+
 
 def list_programs(request_method, uri=None, program_id=None, expiration_filter=None):
     items = []
     programs = vue.get_programs(request_method, uri, program_id, expiration_filter)
+    if program_id:
+        programs.sort(key=lambda x: x['airing_date'])  # sort detailed listing by date
+        programs.sort(key=live_on_top)
+
     for program in programs:
         program_type = program['sentv_type']
         program_id = program['id']
@@ -285,7 +300,22 @@ def list_programs(request_method, uri=None, program_id=None, expiration_filter=N
                     airing_status.append(status_colored)
             airing_status = '/'.join(airing_status)
 
-            list_title = '%s: %s (%s)' % (channel_colored, title, airing_status)
+            if detailed:
+                now = datetime.now()
+                now_date = now.date()
+                airing_date_obj = vue.parse_datetime(program['airing_date'], localize=True)
+                airing_date = airing_date_obj.date()
+                if addon.getSetting('time_notation') == '0': # 12 hour clock
+                    airing_time = airing_date_obj.strftime('%I:%M %p')  # 12 hour clock
+                else:
+                    airing_time = airing_date_obj.strftime('%H:%M')
+                if airing_date == now_date:
+                    start_time = coloring(airing_time, 'time')
+                else:
+                    start_time = coloring('%s %s', 'time') % (airing_date_obj.strftime('%Y-%m-%d'), airing_time)
+                list_title = '%s %s %s: %s' % (airing_status, start_time, channel_colored, title)
+            else:
+                list_title = '%s %s: %s' % (airing_status, channel_colored, title)
 
             if not detailed:
                 if program['is_favorite']:
