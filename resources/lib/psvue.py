@@ -156,10 +156,13 @@ class psvue(object):
         else:
             return False
 
-    def get_stream_url(self, airing_id):
+    def get_stream_url(self, airing_id=None, channel_id=None):
         """Return the stream URL for a program."""
         stream_url = {}
-        url = 'https://media-framework.totsuko.tv/media-framework/media/v2.1/stream/airing/%s' % airing_id
+        if airing_id:
+            url = 'https://media-framework.totsuko.tv/media-framework/media/v2.1/stream/airing/%s' % airing_id
+        else:
+            url = 'https://media-framework.totsuko.tv/media-framework/media/v2.1/stream/channel/%s' % channel_id
         stream_data = self.make_request(url, 'get')
         stream_dict = json.loads(stream_data)
         stream_url['manifest'] = stream_dict['body']['video']
