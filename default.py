@@ -270,11 +270,9 @@ def live_on_top(program):
     """List live programs at the top of the listing."""
     airing_status = []
     for airing in program['airings']:
-        airing_status.append(airing['badge'])
-    if 'live' in airing_status:
-        return -1
-    else:
-        return 1
+        if airing['badge'] == 'live':
+            return -1
+    return 1
 
 
 def list_programs(request_method, uri=None, program_id=None, search_query=None, expiration_filter=None):
