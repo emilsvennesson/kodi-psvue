@@ -508,6 +508,16 @@ def init():
         dialog('ok', language(30004), language(30017))
 
 
+def play_channel(channel_id):
+    stream_url = vue.get_stream_url(channel_id=channel_id)
+    if stream_url:
+        bitrate = select_bitrate(stream_url['bitrates'].keys())
+        if bitrate:
+            play_url = stream_url['bitrates'][bitrate]
+            playitem = xbmcgui.ListItem(path=play_url)
+            playitem.setProperty('IsPlayable', 'true')
+            xbmcplugin.setResolvedUrl(_handle, True, listitem=playitem)
+
 def router(paramstring):
     """Router function that calls other functions depending on the provided paramstring."""
     params = dict(urlparse.parse_qsl(paramstring))
@@ -527,6 +537,8 @@ def router(paramstring):
             dialog(params['dialog_type'], params['heading'], params['message'])
         elif params['action'] == 'search':
             search()
+        elif params['action'] == 'play_channel':
+            play_channel(params['channel_id'])
     else:
         init()
 
