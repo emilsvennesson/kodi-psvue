@@ -314,7 +314,7 @@ class psvue(object):
             url = self.config['epgContentBaseURL'] + 'search/items/%s/offset/%s/size/%s' % (search_query, offset, size)
         else:
             self.log('No URI/program ID/search query supplied.')
-            url = None
+            return False
 
         if request_method == 'post':
             # profile_data is required with all post requests
@@ -324,18 +324,16 @@ class psvue(object):
             payload = None
             headers = None
 
-        if url:
-            data = self.make_request(url, method=request_method, payload=payload, headers=headers)
-            json_data = json.loads(data)
-            programs = json_data['body']['items']
-            for program in programs:
-                if program_id:
-                    program['detailed'] = True
-                else:
-                    program['detailed'] = False
-            return programs
-        else:
-            return False
+        data = self.make_request(url, method=request_method, payload=payload, headers=headers)
+        json_data = json.loads(data)
+        programs = json_data['body']['items']
+        for program in programs:
+            if program_id:
+                program['detailed'] = True
+            else:
+                program['detailed'] = False
+
+        return programs
 
     def parse_m3u8_manifest(self, manifest_url):
         """Return the stream URL along with its bitrate."""
@@ -365,8 +363,8 @@ class psvue(object):
                 return json.loads(fh_credentials.read())
         except IOError:
             self.reset_credentials()
-        with open(self.credentials_file, 'r') as fh_credentials:
-            return json.loads(fh_credentials.read())
+            with open(self.credentials_file, 'r') as fh_credentials:
+                return json.loads(fh_credentials.read())
 
     def reset_credentials(self):
         """Reset the credentials file to default."""
