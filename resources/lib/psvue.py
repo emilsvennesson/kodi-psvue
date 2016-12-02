@@ -22,7 +22,7 @@ class psvue(object):
     def __init__(self, save_path, debug=False, verify_ssl=True):
         self.save_path = save_path
         self.debug = debug
-        self.app_version = '2_6_1'
+        self.app_version = '2_6_2'
         self.base_url = 'https://sonyios.secure.footprint.net/%s/pad/' % self.app_version
         self.verify_ssl = verify_ssl
         self.http_session = requests.Session()
