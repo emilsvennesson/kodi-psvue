@@ -176,13 +176,13 @@ def login_process():
 
 def coloring(text, meaning):
     """Return the text wrapped in appropriate color markup."""
-    if meaning == 'catchup' or meaning == 'dvr':
+    if meaning == 'CATCHUP' or meaning == 'DVR':
         color = 'FF1E88F3'
-    elif meaning == 'live':
+    elif meaning == 'LIVE':
         color = 'FFD20815'
-    elif meaning == 'vod':
+    elif meaning == 'VOD':
         color = 'FFABCC05'
-    elif meaning == 'coming_up':
+    elif meaning == 'COMING UP':
         color = 'FFF28E02'
     elif meaning == 'channel':
         color = 'FFF202DE'
@@ -310,9 +310,12 @@ def list_programs(request_method, uri=None, program_id=None, search_query=None, 
             airing_status = []
             for airing in program['airings']:
                 status = airing['badge'].replace('_', ' ').upper()
-                status_colored = coloring(status, airing['badge'])
+                status_colored = coloring(status, status)
                 if status_colored not in airing_status:
                     airing_status.append(status_colored)
+            if coloring('COMING UP', 'COMING UP') in airing_status and len(airing_status) > 1:
+                # hide 'COMING UP' if it's also available as live/vod
+                airing_status.remove(coloring('COMING UP', 'COMING UP'))
             airing_status = '/'.join(airing_status)
 
             if detailed:
@@ -469,7 +472,7 @@ def parse_airings(airings_data):
     for item in airings_data:
         if item['badge'] != 'coming_up':
             airing = {
-                'title': '%s (%s)' % (item['channel_name'], coloring(item['badge'].upper(), item['badge'])),
+                'title': '%s (%s)' % (item['channel_name'], coloring(item['badge'].upper(), item['badge'].replace('_', ' ').upper())),
                 'airing_id': item['airing_id'],
                 'channel_id': item['channel_id']
             }
