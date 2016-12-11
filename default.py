@@ -164,6 +164,10 @@ def add_item(title, parameters, items=False, folder=True, playable=False, set_in
 def login_process():
     try:
         vue.login(username, password)
+        if not select_profile():
+            dialog('ok', language(30004), language(30017))
+            vue.reset_profile()
+            sys.exit(0)
     except vue.LoginFailure as error:
         if error.value == 'Login failed.':
             dialog('ok', language(30004), language(30005))
@@ -193,26 +197,22 @@ def coloring(text, meaning):
 
 
 def select_profile():
-    profiles = vue.get_profile_names()
-    if not profile:
+    profile_id = vue.get_credentials()['profile_id']
+    profiles = vue.get_profiles()
+    profile_names = vue.return_profile_names(profiles)
+    if str(profile_id) not in str(profiles):
         if len(profiles) == 1:
-            profile_name = profiles[0]
-            addon.setSetting('profile_name', profile_name)
-            return vue.set_profile(profile_name)
+            profile_id = profiles[0]['profile_id']
+            return vue.refresh_profile_data(profile_id)
         else:
-            ret = dialog('select', heading=language(30016), options=profiles)
+            ret = dialog('select', heading=language(30016), options=profile_names)
             if ret is not None:
-                profile_name = profiles[ret]
-                addon.setSetting('profile_name', profile_name)
-                return vue.set_profile(profile_name)
+                profile_id = profiles[ret]['profile_id']
+                return vue.refresh_profile_data(profile_id)
             else:
                 return False
     else:
-        if vue.set_profile(profile):
-            return True
-        else:
-            addon.setSetting('profile_name', '')  # reset profile if set_profile fails
-            return False
+        return True
 
 def list_search():
     title = language(30021)
@@ -504,13 +504,6 @@ def play(airings_data):
             xbmcplugin.setResolvedUrl(_handle, True, listitem=playitem)
 
 
-def init():
-    if select_profile():
-        list_categories()
-    else:
-        dialog('ok', language(30004), language(30017))
-
-
 def play_channel(channel_id):
     stream_url = vue.get_stream_url(channel_id=channel_id)
     if stream_url:
@@ -520,6 +513,7 @@ def play_channel(channel_id):
             playitem = xbmcgui.ListItem(path=play_url)
             playitem.setProperty('IsPlayable', 'true')
             xbmcplugin.setResolvedUrl(_handle, True, listitem=playitem)
+
 
 def router(paramstring):
     """Router function that calls other functions depending on the provided paramstring."""
@@ -543,7 +537,7 @@ def router(paramstring):
         elif params['action'] == 'play_channel':
             play_channel(params['channel_id'])
     else:
-        init()
+        list_categories()
 
 
 if __name__ == '__main__':

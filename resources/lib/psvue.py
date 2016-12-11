@@ -146,12 +146,13 @@ class psvue(object):
             raise self.LoginFailure('No username and password supplied.')
 
     def is_session_valid(self):
-        """Return whether the PS Vue session is valid."""
+        """Return whether the PS Vue session is valid and that a profile has been selected."""
         utcnow = datetime.utcnow()
         expiry_date = self.parse_datetime(self.get_credentials()['expiry_date'])
         expiry_date = expiry_date.replace(tzinfo=None)
+        profile_selected = self.get_credentials()['profile_id']
 
-        if expiry_date > utcnow:
+        if expiry_date > utcnow and profile_selected:
             return True
         else:
             return False
@@ -182,39 +183,41 @@ class psvue(object):
 
         return profiles
 
-    def get_profile_names(self):
+    def return_profile_names(self, profiles):
         """Return a list of the PS Vue profile names."""
         profile_names = []
-        profiles = self.get_profiles()
-
         for profile in profiles:
             profile_names.append(profile['profile_name'])
 
         return profile_names
 
-    def set_profile(self, profile_name):
-        """Attempt to set the profile cookies.
-           Save the returned profile data in a dict as it's required for some POST requests."""
-        profiles = self.get_profiles()
-        data = False
-        for profile in profiles:
-            if profile['profile_name'] == profile_name:
-                url = self.config['epgUserSessionBaseURL'] + 'profile/%s' % profile['profile_id']
-                data = self.make_request(url, 'get')
-                break
-
-        if data:
+    def refresh_profile_data(self, profile_id):
+        """Save/refresh the returned profile data in a dict."""
+        url = self.config['epgUserSessionBaseURL'] + 'profile/%s' % profile_id
+        data = self.make_request(url, 'get')
+        try:
             json_data = json.loads(data)
+        except ValueError:
+            json_data = False
+
+        if json_data:
             profile_data = {
                 'profile_data': {
                     'favorites': json_data['body']['favorites']
                 }
             }
-            self.save_credentials(profile_data=profile_data)
+            self.save_credentials(profile_data=profile_data, profile_id=profile_id)
             return True
         else:
-            self.log('No profile name in response matched the provided profile name.')
+            self.reset_profile()
             return False
+
+    def reset_profile(self):
+        """Reset the selected profile."""
+        credentials = self.get_credentials()
+        credentials['profile_id'] = None
+        with open(self.credentials_file, 'w') as fh_credentials:
+            fh_credentials.write(json.dumps(credentials))
 
     def get_categories(self):
         """Return all PS Vue categories."""
@@ -318,6 +321,7 @@ class psvue(object):
 
         if request_method == 'post':
             # profile_data is required with all post requests
+            self.refresh_profile_data(self.get_credentials()['profile_id'])
             payload = json.dumps(self.get_credentials()['profile_data'])
             headers = {'Content-Type': 'application/json'}
         else:
@@ -373,11 +377,12 @@ class psvue(object):
         credentials['device_id'] = str(uuid.uuid4())
         credentials['code'] = None
         credentials['expiry_date'] = utcnow.isoformat()
+        credentials['profile_id'] = None
         credentials['profile_data'] = None
         with open(self.credentials_file, 'w') as fh_credentials:
             fh_credentials.write(json.dumps(credentials))
 
-    def save_credentials(self, device_id=None, code=None, expiry_date=None, profile_data=None):
+    def save_credentials(self, device_id=None, code=None, expiry_date=None, profile_id=None, profile_data=None):
         """Save credentials to file."""
         credentials = {}
         if not device_id:
@@ -386,12 +391,15 @@ class psvue(object):
             code = self.get_credentials()['code']
         if not expiry_date:
             expiry_date = self.get_credentials()['expiry_date']
+        if not profile_id:
+            profile_id = self.get_credentials()['profile_id']
         if not profile_data:
             profile_data = self.get_credentials()['profile_data']
 
         credentials['device_id'] = device_id
         credentials['code'] = code
         credentials['expiry_date'] = expiry_date
+        credentials['profile_id'] = profile_id
         credentials['profile_data'] = profile_data
 
         with open(self.credentials_file, 'w') as fh_credentials:
