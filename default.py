@@ -36,22 +36,13 @@ if addon.getSetting('verify_ssl') == 'false':
     verify_ssl = False
 else:
     verify_ssl = True
-debug_cmd = {  # determine if debug logging is activated in kodi
-               'jsonrpc': '2.0',
-               'method': 'Settings.GetSettingValue',
-               'params': {'setting': 'debug.showloginfo'},
-               'id': '1'
-               }
-debug_dict = json.loads(xbmc.executeJSONRPC(json.dumps(debug_cmd)))
-debug = debug_dict['result']['value']
 
-vue = psvue(addon_profile, debug, verify_ssl)
+vue = psvue(addon_profile, True, verify_ssl)
 
 
 def addon_log(string):
-    if debug:
-        msg = '%s: %s' % (logging_prefix, string)
-        xbmc.log(msg=msg, level=xbmc.LOGDEBUG)
+    msg = '%s: %s' % (logging_prefix, string)
+    xbmc.log(msg=msg, level=xbmc.LOGDEBUG)
 
 
 def get_user_input(heading):
