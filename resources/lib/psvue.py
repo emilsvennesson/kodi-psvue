@@ -22,7 +22,7 @@ class psvue(object):
     def __init__(self, save_path, debug=False, verify_ssl=True):
         self.save_path = save_path
         self.debug = debug
-        self.app_version = '2_6_2'
+        self.app_version = '2_6_3'
         self.base_url = 'https://sonyios.secure.footprint.net/%s/pad/' % self.app_version
         self.verify_ssl = verify_ssl
         self.http_session = requests.Session()
@@ -37,7 +37,7 @@ class psvue(object):
         self.valid_session = self.is_session_valid()
         self.config = self.get_config()
 
-    class LoginFailure(Exception):
+    class VueError(Exception):
         def __init__(self, value):
             self.value = value
 
@@ -70,6 +70,15 @@ class psvue(object):
             self.log('Response: %s' % req.content)
             self.log('Headers: %s' % req.headers)
             self.cookie_jar.save(ignore_discard=True, ignore_expires=False)
+
+            try:
+                if json.loads(req.content)['header']['error']:
+                    raise self.VueError(json.loads(req.content)['header']['error']['message'])
+            except KeyError:
+                pass
+            except ValueError:
+                pass
+
             if return_req:
                 return req
             else:
@@ -129,21 +138,28 @@ class psvue(object):
             self.save_credentials(expiry_date=json_data['body']['expiry_date'])
         else:
             error_message = json_data['header']['error']['message']
-            raise self.LoginFailure(error_message)
+            raise self.VueError(error_message)
 
     def login(self, username=None, password=None):
         """Complete login process for PlayStation Vue."""
         if username and password:
+            if self.get_credentials()['code']:
+                try:
+                    self.authenticate()
+                    return True
+                except self.VueError:
+                    pass
+
             self.login_to_account(username, password)
             if not self.get_grant_code():
-                raise self.LoginFailure('Login failed.')
+                raise self.VueError('Login failed.')
             else:
                 try:
                     self.authenticate()
-                except self.LoginFailure:
+                except self.VueError:
                     raise
         else:
-            raise self.LoginFailure('No username and password supplied.')
+            raise self.VueError('No username and password supplied.')
 
     def is_session_valid(self):
         """Return whether the PS Vue session is valid and that a profile has been selected."""

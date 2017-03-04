@@ -159,7 +159,7 @@ def login_process():
             dialog('ok', language(30004), language(30017))
             vue.reset_profile()
             sys.exit(0)
-    except vue.LoginFailure as error:
+    except vue.VueError as error:
         if error.value == 'Login failed.':
             dialog('ok', language(30004), language(30005))
         elif error.value == 'No username and password supplied.':
@@ -534,4 +534,15 @@ def router(paramstring):
 if __name__ == '__main__':
     if not vue.valid_session:
         login_process()
-    router(sys.argv[2][1:])  # trim the leading '?' from the plugin call paramstring
+
+    try:
+        router(sys.argv[2][1:])  # trim the leading '?' from the plugin call paramstring
+    except vue.VueError as error:
+        if error.value == 'The user\'s geo-location has changed.':
+            login_process()
+            router(sys.argv[2][1:])
+        elif error.value == 'There is a problem with your access.  Please close the application and then sign in again to ensure that your most recent information is used to access your subscription service.   (Error 1007)':
+            login_process()
+            router(sys.argv[2][1:])
+        else:
+            dialog('ok', 'Error', error.value)
