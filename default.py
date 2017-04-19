@@ -234,6 +234,7 @@ def list_categories():
         add_item(title, params)
 
     list_search()
+    add_item(language(30024), {'action': 'list_all_channels'})
     xbmcplugin.endOfDirectory(_handle)
 
 
@@ -505,6 +506,17 @@ def play_channel(channel_id):
             playitem.setProperty('IsPlayable', 'true')
             xbmcplugin.setResolvedUrl(_handle, True, listitem=playitem)
 
+def list_all_channels():
+    channels = vue.get_programs('get', 'channels/items/all/sort/channeltype/offset/0/size/999')
+
+    for channel in channels:
+        params = {
+            'action': 'play_channel',
+            'channel_id': channel['id']
+        }
+        add_item(channel['title'], params, set_art=return_art(channel), playable=True)
+    xbmcplugin.endOfDirectory(_handle)
+
 
 def router(paramstring):
     """Router function that calls other functions depending on the provided paramstring."""
@@ -527,6 +539,8 @@ def router(paramstring):
             search()
         elif params['action'] == 'play_channel':
             play_channel(params['channel_id'])
+        elif params['action'] == 'list_all_channels':
+            list_all_channels()
     else:
         list_categories()
 

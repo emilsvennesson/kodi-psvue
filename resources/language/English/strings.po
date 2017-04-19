@@ -105,3 +105,6 @@ msgctxt "#30023"
 msgid "Where would you like to watch this episode?"
 msgstr ""
 
+msgctxt "#30024"
+msgid "List all channels (playable directly)"
+msgstr ""
