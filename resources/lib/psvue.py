@@ -359,7 +359,9 @@ class psvue(object):
         """Return the stream URL along with its bitrate."""
         streams = {}
         m3u8_manifest = self.make_request(manifest_url, 'get')
-        m3u8_header = {'Cookie': 'reqPayload=' + self.get_cookie_by_name('reqPayload').value}
+        m3u8_header = {'Cookie': 'reqPayload=' + self.get_cookie_by_name('reqPayload').value,
+                       'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101 Firefox/52.0'
+                       }
         m3u8_obj = m3u8.loads(m3u8_manifest)
         for playlist in m3u8_obj.playlists:
             bitrate = int(playlist.stream_info.bandwidth) / 1000
