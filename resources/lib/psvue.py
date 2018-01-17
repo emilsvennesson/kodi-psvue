@@ -9,7 +9,6 @@ import cookielib
 import time
 import calendar
 import uuid
-import base64
 from datetime import datetime, timedelta
 from urllib import urlencode
 
@@ -112,12 +111,12 @@ class psvue(object):
 
     def login_to_account(self, username, password):
         """Blindly login to PlayStation Network."""
-        url = 'https://auth.api.sonyentertainmentnetwork.com/login.do'
+        url = 'https://auth.api.sonyentertainmentnetwork.com/2.0/ssocookie'
         payload = {
-            'params': base64.b64encode('request_locale=en_US&request_theme=liquid&disableLinks=SENLink'),
-            'j_username': username,
-            'rememberSignIn': 'on',
-            'j_password': password
+            'authentication_type': 'password',
+            'username': username,
+            'password': password,
+            'client_id': '0a5fe341-cb16-47d9-991e-0110fff49713'
         }
 
         self.make_request(url, 'post', payload=payload)
